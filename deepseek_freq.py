@@ -24,6 +24,7 @@ def generate_frequency_file(output_path="frequency.txt", char_count=5000):
     
     # 扩展字符集（包括次常用汉字、数字、字母和符号）
     extended_chars = [
+        ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'
         '①②③④⑤⑥⑦⑧⑨⑩⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽㈠㈡㈢㈣㈤㈥㈦㈧㈨㈩',
         'ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫⅰⅱⅲⅳⅴⅵⅶⅷⅸⅹ',
         '⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑⒒⒓⒔⒕⒖⒗⒘⒙⒚⒛',
@@ -37,7 +38,6 @@ def generate_frequency_file(output_path="frequency.txt", char_count=5000):
         'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя',
         '─│┌┐└┘├┤┬┴┼▀▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▓▔▕▼▖▗▘▙▚▛▜▝▞▟',
         '☺☻♥♦♣♠•◘○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼',
-        ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'
     ]
     
     # 合并所有字符
@@ -48,29 +48,20 @@ def generate_frequency_file(output_path="frequency.txt", char_count=5000):
     # 确保字符数量不超过可用字符
     char_count = min(char_count, len(all_chars))
     
-    # 生成频率数据（模拟真实分布，前1000个字符频率较高）
+    # 生成频率数据（按 all_chars 顺序，频率由高到低线性递减）
     frequency_data = []
+    max_freq = 10000
+    min_freq = 10
+    step = (max_freq - min_freq) / (char_count - 1) if char_count > 1 else 0
     for i, char in enumerate(all_chars[:char_count]):
-        # 模拟真实频率分布：前10%的字符占50%的出现频率
-        if i < char_count * 0.1:
-            freq = random.randint(5000, 10000)
-        # 中间40%的字符占30%的出现频率
-        elif i < char_count * 0.5:
-            freq = random.randint(1000, 5000)
-        # 后50%的字符占20%的出现频率
-        else:
-            freq = random.randint(10, 1000)
-        
+        freq = int(max_freq - step * i)
         frequency_data.append((char, freq))
-    
-    # 按频率降序排序
-    frequency_data.sort(key=lambda x: x[1], reverse=True)
-    
+
     # 写入文件
     with open(output_path, 'w', encoding='utf-8') as f:
         for char, freq in frequency_data:
             f.write(f"{char}\t{freq}\n")
-    
+
     print(f"已生成频率文件: {output_path}")
     print(f"包含 {len(frequency_data)} 个字符")
     print("前10个高频字符:")
